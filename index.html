@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Anatomy Study Station</title>
+  <title>Anatomy MD</title>
   <style>
     :root {
       --bg: #f6f8fc;
@@ -11,8 +11,8 @@
       --ink: #172033;
       --muted: #5d6b88;
       --line: #dbe3f0;
-      --accent: #2563eb;
-      --accent-soft: #eaf2ff;
+      --accent: #4f46e5;
+      --accent-soft: #eef2ff;
       --good: #dff7e8;
       --good-line: #7dd3a4;
       --bad: #fde7e7;
@@ -30,11 +30,11 @@
     }
 
     .app {
-      max-width: 1400px;
+      max-width: 1320px;
       margin: 0 auto;
       padding: 20px;
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: 1.2fr 0.8fr;
       gap: 20px;
     }
 
@@ -46,17 +46,19 @@
       overflow: hidden;
     }
 
-    .section { padding: 20px; }
+    .section {
+      padding: 20px;
+    }
 
     .title-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
       gap: 12px;
+      align-items: flex-start;
       margin-bottom: 16px;
     }
 
-    h1, h2, p { margin: 0; }
+    h1, h2, h3, p { margin: 0; }
     h1 { font-size: 30px; }
     h2 { font-size: 22px; }
     .subtle { color: var(--muted); font-size: 14px; margin-top: 6px; }
@@ -64,20 +66,21 @@
     .badge {
       background: var(--accent-soft);
       color: var(--accent);
-      border: 1px solid #bfdbfe;
+      border: 1px solid #c7d2fe;
       border-radius: 999px;
       padding: 9px 14px;
       font-weight: 700;
       white-space: nowrap;
     }
 
-    .toolbar, .teacher-actions, .filter-row, .mode-row {
+    .toolbar, .stack, .field-group, .teacher-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
     }
 
     .toolbar { margin-bottom: 16px; }
+    .stack { flex-direction: column; }
 
     button, input, textarea, select {
       font: inherit;
@@ -132,7 +135,7 @@
     .progress-bar {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #2563eb, #22c55e);
+      background: linear-gradient(90deg, #6366f1, #22c55e);
       transition: width 0.2s ease;
     }
 
@@ -147,8 +150,12 @@
       box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
     }
 
-    .board.teacher { cursor: crosshair; }
-    .board-image, .board-placeholder {
+    .board.teacher {
+      cursor: crosshair;
+    }
+
+    .board-image,
+    .board-placeholder {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -168,38 +175,37 @@
       padding: 20px;
     }
 
-    .target {
+    .zone {
       position: absolute;
       transform: translate(-50%, -50%);
       min-width: 130px;
       max-width: 220px;
       border-radius: 18px;
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.94);
+      background: rgba(255,255,255,0.92);
       padding: 10px 12px;
       backdrop-filter: blur(4px);
       box-shadow: 0 10px 22px rgba(0,0,0,0.08);
       font-size: 14px;
     }
 
-    .target.good {
+    .zone.good {
       background: var(--good);
       border-color: var(--good-line);
     }
 
-    .target.bad {
+    .zone.bad {
       background: var(--bad);
       border-color: var(--bad-line);
     }
 
-    .target-row {
+    .zone-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      min-width: 0;
     }
 
-    .target-index {
+    .zone-index {
       width: 24px;
       height: 24px;
       border-radius: 999px;
@@ -211,23 +217,6 @@
       flex: 0 0 auto;
     }
 
-    .target-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .target-thumb {
-      width: 38px;
-      height: 38px;
-      object-fit: contain;
-      border-radius: 10px;
-      background: white;
-      border: 1px solid var(--line);
-      padding: 4px;
-      flex: 0 0 auto;
-    }
-
     .teacher-pin {
       position: absolute;
       transform: translate(-50%, -50%);
@@ -235,11 +224,11 @@
       border-radius: 999px;
       background: rgba(255,255,255,0.95);
       border: 2px solid var(--accent);
-      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.15);
+      box-shadow: 0 10px 18px rgba(79, 70, 229, 0.15);
       font-size: 12px;
       font-weight: 700;
       pointer-events: none;
-      max-width: 240px;
+      max-width: 220px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -251,57 +240,32 @@
       align-content: start;
     }
 
-    .icon-bank {
+    .label-bank {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      max-height: 420px;
-      overflow: auto;
-      padding-right: 2px;
     }
 
-    .icon-chip {
+    .label-chip {
       border: 1px solid var(--line);
       border-radius: 18px;
       background: white;
-      padding: 10px;
+      padding: 12px;
       cursor: grab;
       box-shadow: 0 8px 14px rgba(0,0,0,0.04);
       user-select: none;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      min-width: 0;
     }
 
-    .icon-chip:active { cursor: grabbing; }
+    .label-chip:active { cursor: grabbing; }
 
-    .icon-chip img {
-      width: 44px;
-      height: 44px;
-      object-fit: contain;
-      border-radius: 12px;
-      background: #f8fbff;
+    .zone-input {
+      width: 100%;
       border: 1px solid var(--line);
-      padding: 4px;
-      flex: 0 0 auto;
-    }
-
-    .icon-meta {
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: white;
+      color: var(--ink);
       min-width: 0;
-    }
-
-    .icon-label {
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .icon-category {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
     }
 
     .field {
@@ -315,7 +279,7 @@
       font-weight: 700;
     }
 
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -329,7 +293,7 @@
       resize: vertical;
     }
 
-    .status, .teacher-list {
+    .status {
       border-radius: 18px;
       background: #f3f6fb;
       padding: 12px 14px;
@@ -337,15 +301,27 @@
       white-space: pre-wrap;
     }
 
-    .teacher-list {
-      min-height: 72px;
-      font-size: 14px;
+    .upload-box {
+      border: 1px dashed #b7c4de;
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      background: #fbfcff;
     }
 
     .helper {
       font-size: 12px;
       color: var(--muted);
       line-height: 1.45;
+    }
+
+    .teacher-list {
+      border-radius: 18px;
+      background: #f3f6fb;
+      padding: 12px 14px;
+      font-size: 14px;
+      white-space: pre-wrap;
+      min-height: 72px;
     }
 
     .mini-title {
@@ -357,40 +333,12 @@
       font-weight: 700;
     }
 
-    .upload-box {
-      border: 1px dashed #b7c4de;
-      border-radius: 18px;
-      padding: 18px;
-      text-align: center;
-      background: #fbfcff;
-    }
-
-    .typing-input {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 8px 10px;
-      background: white;
-      color: var(--ink);
-      min-width: 0;
-    }
-
-    .pill {
-      display: inline-block;
-      font-size: 12px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      background: #eff6ff;
-      color: var(--accent);
-      border: 1px solid #dbeafe;
-      margin-top: 5px;
-    }
-
     @media (max-width: 1000px) {
       .app {
         grid-template-columns: 1fr;
       }
-      .icon-bank {
+
+      .label-bank {
         grid-template-columns: 1fr 1fr;
       }
     }
@@ -399,12 +347,15 @@
       .app {
         padding: 12px;
       }
+
       .section {
         padding: 16px;
       }
-      .icon-bank {
+
+      .label-bank {
         grid-template-columns: 1fr;
       }
+
       h1 { font-size: 24px; }
     }
   </style>
@@ -415,15 +366,15 @@
       <div class="section">
         <div class="title-row">
           <div>
-            <h1>Anatomy Study Station</h1>
-            <p class="subtle">A drag-and-build anatomy board for organs, bones, and structure labeling 🫀🦴 Start with the demo thorax board, then import a custom board if you want to practice something else.</p>
+            <h1>Biochem Study Station</h1>
+            <p class="subtle">A GitHub Pages-friendly practice board for pathway maps, illustrations, and labeling drills 🦜</p>
           </div>
           <div class="badge" id="scoreBadge">0/0 correct</div>
         </div>
 
         <div class="toolbar">
           <button id="prevBtn">Previous</button>
-          <button id="nextBtn" class="primary">Next Board</button>
+          <button id="nextBtn" class="primary">Next Question</button>
           <button id="resetBtn">Reset</button>
           <button id="showAnswersBtn">Show Answers</button>
           <button id="saveSessionBtn">Save Session</button>
@@ -432,9 +383,9 @@
         </div>
 
         <div class="meta">
-          <strong id="boardTitle">Loading...</strong>
+          <strong id="diagramTitle">Loading...</strong>
           <span>•</span>
-          <span id="boardPrompt">Preparing the board...</span>
+          <span id="diagramPrompt">Preparing the board...</span>
         </div>
 
         <div class="progress-shell">
@@ -448,59 +399,37 @@
     <div class="sidebar">
       <div class="card">
         <div class="section">
-          <h2>Icon Bank</h2>
-          <p class="subtle">Drag anatomy icons onto the numbered targets, or switch to typing mode. This demo uses one starter board, and you can import custom boards for other anatomy topics.</p>
-
-          <div class="filter-row" style="margin:14px 0 10px;">
-            <input id="searchInput" type="text" placeholder="Search icon names" />
-            <select id="categoryFilter">
-              <option value="All">All Categories</option>
-            </select>
-          </div>
-
-          <div class="icon-bank" id="iconBank"></div>
+          <h2>Label Bank</h2>
+          <p class="subtle">Drag a label chip onto a numbered target on the board.</p>
+          <div class="label-bank" id="labelBank"></div>
         </div>
       </div>
 
       <div class="card">
-        <div class="section">
+        <div class="section stack">
           <h2>Data + Import</h2>
 
-          <div class="field" style="margin-top:14px;">
-            <label for="csvUrl">CSV Question Bank URL</label>
+          <div class="field">
+            <label for="csvUrl">Google Sheet CSV URL</label>
             <input id="csvUrl" type="text" placeholder="Paste published CSV URL here" />
-            <button id="loadCsvBtn" class="primary">Load CSV Question Bank</button>
-            <div class="helper">Use a published Google Sheet CSV or any public CSV URL. Supported columns: <strong>id, boardTitle, imageUrl, prompt, allowedIconIds, targets</strong>.</div>
+            <button id="loadCsvBtn" class="primary">Load Sheet Question Bank</button>
+            <div class="helper">Use File → Share → Publish to web in Google Sheets, then publish a sheet tab as CSV.</div>
           </div>
 
-          <div class="field" style="margin-top:14px;">
-            <label for="iconsJsonUrl">Icons JSON URL</label>
-            <input id="iconsJsonUrl" type="text" placeholder="Optional icons.json URL from your GitHub Pages site" />
-            <button id="loadIconsBtn" class="primary">Load Icon Bank JSON</button>
-            <div class="helper">Best pattern: keep icon files in <strong>images/anatomy-icons/</strong> and list them in an <strong>icons.json</strong> file.</div>
-          </div>
-
-          <div class="field" style="margin-top:14px;">
-            <label for="boardImageUpload">Upload Board Image</label>
+          <div class="field">
+            <label for="imageUpload">Upload Diagram</label>
             <div class="upload-box">
-              <input id="boardImageUpload" type="file" accept="image/*" />
-              <div class="helper" style="margin-top:8px;">Good for skull diagrams, thorax maps, heart views, lung labeling boards, and sagittal sections.</div>
+              <input id="imageUpload" type="file" accept="image/*" />
+              <div class="helper" style="margin-top:8px;">Great for lecture screenshots, pathways, metabolic maps, or textbook figures.</div>
             </div>
           </div>
 
-          <div class="field" style="margin-top:14px;">
+          <div class="field">
             <label for="customPrompt">Prompt</label>
-            <textarea id="customPrompt" placeholder="Optional prompt for your current anatomy board"></textarea>
+            <textarea id="customPrompt" placeholder="Optional prompt for your current board"></textarea>
           </div>
 
-          <div class="field" style="margin-top:14px;">
-            <label for="driveSaveUrl">Google Drive Save Web App URL</label>
-            <input id="driveSaveUrl" type="text" placeholder="Paste your Apps Script web app URL here" />
-            <button id="saveDriveBtn">Save JSON to Google Drive</button>
-            <div class="helper">Direct Drive save from a static GitHub Pages site usually needs a small Google Apps Script web app as a bridge.</div>
-          </div>
-
-          <div class="field" style="margin-top:14px;">
+          <div class="field">
             <label>Status</label>
             <div class="status" id="statusBox">Demo mode loaded.</div>
           </div>
@@ -508,34 +437,35 @@
       </div>
 
       <div class="card">
-        <div class="section">
+        <div class="section stack">
           <h2>Teacher Mode</h2>
-          <p class="subtle">Type the structure name, then click the board to place a target.</p>
+          <p class="subtle">Add your own answer targets by typing a label and clicking the image.</p>
 
-          <div class="field" style="margin-top:14px;">
-            <label for="teacherTitle">Board Title</label>
-            <input id="teacherTitle" type="text" value="Custom Anatomy Board" />
+          <div class="field">
+            <label for="teacherTitle">Diagram Title</label>
+            <input id="teacherTitle" type="text" value="Custom Diagram" />
           </div>
 
-          <div class="field" style="margin-top:14px;">
-            <label for="teacherCategory">Suggested Category</label>
-            <input id="teacherCategory" type="text" placeholder="Examples: Skeletal, Muscular, Respiratory, Cardiovascular" />
+          <div class="field">
+            <label for="teacherLabels">Label Bank</label>
+            <input id="teacherLabels" type="text" placeholder="ATP|NADH|Citrate|Acetyl-CoA" />
+            <div class="helper">Separate labels with a vertical bar <strong>|</strong>.</div>
           </div>
 
-          <div class="field" style="margin-top:14px;">
+          <div class="field">
             <label for="teacherAnswer">Next Target Label</label>
-            <input id="teacherAnswer" type="text" placeholder="Type structure, then click image to place it" />
+            <input id="teacherAnswer" type="text" placeholder="Type label, then click image to place it" />
           </div>
 
-          <div class="teacher-actions" style="margin-top:14px;">
+          <div class="teacher-actions">
             <button id="useTeacherBoardBtn" class="primary">Use as Practice Board</button>
-            <button id="exportTeacherJsonBtn">Export Board JSON</button>
-            <button id="clearTeacherTargetsBtn">Clear Targets</button>
+            <button id="exportTeacherCsvBtn">Export CSV Row</button>
+            <button id="clearTeacherZonesBtn">Clear Teacher Zones</button>
           </div>
 
-          <div style="margin-top:14px;">
-            <div class="mini-title">Placed targets</div>
-            <div class="teacher-list" id="teacherList">No teacher targets placed yet.</div>
+          <div>
+            <div class="mini-title">Teacher targets</div>
+            <div class="teacher-list" id="teacherList">No teacher zones placed yet.</div>
           </div>
         </div>
       </div>
@@ -543,75 +473,57 @@
   </div>
 
   <script>
-    const DEMO_ICONS = [
-      { id: 'heart', label: 'Heart', src: './images/anatomy-icons/heart.png', category: 'Cardiovascular' },
-      { id: 'left-lung', label: 'Left Lung', src: './images/anatomy-icons/left-lung.png', category: 'Respiratory' },
-      { id: 'right-lung', label: 'Right Lung', src: './images/anatomy-icons/right-lung.png', category: 'Respiratory' },
-      { id: 'trachea', label: 'Trachea', src: './images/anatomy-icons/trachea.png', category: 'Respiratory' },
-      { id: 'clavicle', label: 'Clavicle', src: './images/anatomy-icons/clavicle.png', category: 'Skeletal' },
-      { id: 'scapula', label: 'Scapula', src: './images/anatomy-icons/scapula.png', category: 'Skeletal' },
-      { id: 'sternum', label: 'Sternum', src: './images/anatomy-icons/sternum.png', category: 'Skeletal' },
-      { id: 'rib', label: 'Rib', src: './images/anatomy-icons/rib.png', category: 'Skeletal' }
-    ];
-
-    const DEMO_BOARDS = [
-      {
-        id: 'thorax-anterior',
-        boardTitle: 'Thorax Overview',
-        imageUrl: './images/anatomy-boards/respiratory-system-icon.png',
-        prompt: 'Place the main thoracic structures in their anatomical positions. Import a custom board if you want to practice a different anatomy region.',
-        placementsMode: 'icons',
-        allowedIconIds: ['left-lung', 'right-lung', 'heart', 'trachea'],
-        targets: [
-          { id: 't1', x: 50, y: 24, answer: 'Trachea' },
-          { id: 't2', x: 37, y: 44, answer: 'Left Lung' },
-          { id: 't3', x: 63, y: 44, answer: 'Right Lung' },
-          { id: 't4', x: 50, y: 63, answer: 'Heart' }
-        ]
-      }
-    ];
+const DEMO_QUESTIONS = [
+  {
+    id: 'glycolysis-regulated-steps',
+    diagramTitle: 'Anatomy Demo',
+    imageUrl: './images/anatomy-boards/anatomy-board-m3-1.png',
+    prompt: 'Label the three structures of the respiratory system.',
+    labels: ['Heart', 'Lung', 'Pharynx'],
+    zones: [
+      { id: 'z1', x: 16, y: 17, answer: 'Heart' },
+      { id: 'z2', x: 25, y: 44, answer: 'Lung' },
+      { id: 'z3', x: 67, y: 83, answer: 'Pharynx' }
+    ]
+  },
+];
 
     const state = {
-      boards: [...DEMO_BOARDS],
-      icons: [...DEMO_ICONS],
-      boardIndex: 0,
+      questions: [...DEMO_QUESTIONS],
+      questionIndex: 0,
       placements: {},
       showAnswers: false,
-      draggingItem: null,
-      localBoardImage: '',
+      draggingLabel: null,
+      localImage: '',
       teacherMode: false,
       typingMode: false,
-      teacherTargets: []
+      teacherZones: []
     };
 
     const els = {
       board: document.getElementById('board'),
-      iconBank: document.getElementById('iconBank'),
-      boardTitle: document.getElementById('boardTitle'),
-      boardPrompt: document.getElementById('boardPrompt'),
+      labelBank: document.getElementById('labelBank'),
+      diagramTitle: document.getElementById('diagramTitle'),
+      diagramPrompt: document.getElementById('diagramPrompt'),
       scoreBadge: document.getElementById('scoreBadge'),
       progressBar: document.getElementById('progressBar'),
       statusBox: document.getElementById('statusBox'),
-      customPrompt: document.getElementById('customPrompt'),
-      boardImageUpload: document.getElementById('boardImageUpload'),
-      teacherModeBtn: document.getElementById('teacherModeBtn'),
-      typingModeBtn: document.getElementById('typingModeBtn'),
-      teacherAnswer: document.getElementById('teacherAnswer'),
-      teacherTitle: document.getElementById('teacherTitle'),
-      teacherCategory: document.getElementById('teacherCategory'),
-      teacherList: document.getElementById('teacherList'),
-      searchInput: document.getElementById('searchInput'),
-      categoryFilter: document.getElementById('categoryFilter'),
-      iconsJsonUrl: document.getElementById('iconsJsonUrl'),
       csvUrl: document.getElementById('csvUrl'),
-      driveSaveUrl: document.getElementById('driveSaveUrl')
+      customPrompt: document.getElementById('customPrompt'),
+      imageUpload: document.getElementById('imageUpload'),
+      teacherModeBtn: document.getElementById('teacherModeBtn'),
+      teacherAnswer: document.getElementById('teacherAnswer'),
+      teacherLabels: document.getElementById('teacherLabels'),
+      teacherTitle: document.getElementById('teacherTitle'),
+      teacherList: document.getElementById('teacherList'),
+      typingModeBtn: document.getElementById('typingModeBtn')
     };
 
-    function currentBoard() {
-      return state.boards[state.boardIndex] || state.boards[0];
+    function currentQuestion() {
+      return state.questions[state.questionIndex] || state.questions[0];
     }
 
-    function normalize(value) {
+    function normalizeAnswer(value) {
       return String(value || '').trim().toLowerCase();
     }
 
@@ -619,225 +531,8 @@
       return Math.min(Math.max(value, min), max);
     }
 
-    function escapeHtml(text) {
-      return String(text)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
     function setStatus(message) {
       els.statusBox.textContent = message;
-    }
-
-    function resetPlacements() {
-      const board = currentBoard();
-      state.placements = {};
-      (board.targets || []).forEach(target => {
-        state.placements[target.id] = '';
-      });
-      state.showAnswers = false;
-      document.getElementById('showAnswersBtn').textContent = 'Show Answers';
-    }
-
-    function getIconById(id) {
-      return state.icons.find(icon => icon.id === id) || null;
-    }
-
-    function getAllowedIcons(board) {
-      if (!board.allowedIconIds || !board.allowedIconIds.length) return state.icons;
-      return state.icons.filter(icon => board.allowedIconIds.includes(icon.id));
-    }
-
-    function filteredIcons() {
-      const board = currentBoard();
-      const allowed = getAllowedIcons(board);
-      const q = normalize(els.searchInput.value);
-      const cat = els.categoryFilter.value;
-      return allowed.filter(icon => {
-        const searchOkay = !q || normalize(icon.label).includes(q) || normalize(icon.category).includes(q);
-        const catOkay = cat === 'All' || icon.category === cat;
-        return searchOkay && catOkay;
-      });
-    }
-
-    function populateCategoryFilter() {
-      const board = currentBoard();
-      const categories = [...new Set(getAllowedIcons(board).map(icon => icon.category).filter(Boolean))].sort();
-      const current = els.categoryFilter.value || 'All';
-      els.categoryFilter.innerHTML = '<option value="All">All Categories</option>';
-      categories.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat;
-        option.textContent = cat;
-        els.categoryFilter.appendChild(option);
-      });
-      if ([...els.categoryFilter.options].some(opt => opt.value === current)) {
-        els.categoryFilter.value = current;
-      }
-    }
-
-    function renderIconBank() {
-      els.iconBank.innerHTML = '';
-      if (state.typingMode) {
-        els.iconBank.innerHTML = '<div class="helper">Typing mode is on. Type structure names directly into the numbered targets on the board.</div>';
-        return;
-      }
-
-      const icons = filteredIcons();
-      if (!icons.length) {
-        els.iconBank.innerHTML = '<div class="helper">No icons match this filter yet.</div>';
-        return;
-      }
-
-      icons.forEach(icon => {
-        const chip = document.createElement('div');
-        chip.className = 'icon-chip';
-        chip.draggable = true;
-        chip.addEventListener('dragstart', () => {
-          state.draggingItem = icon;
-        });
-        chip.addEventListener('dragend', () => {
-          state.draggingItem = null;
-        });
-
-        chip.innerHTML = `
-          <img src="${escapeHtml(icon.src)}" alt="${escapeHtml(icon.label)}" />
-          <div class="icon-meta">
-            <div class="icon-label">${escapeHtml(icon.label)}</div>
-            <div class="icon-category">${escapeHtml(icon.category || 'General')}</div>
-          </div>
-        `;
-        els.iconBank.appendChild(chip);
-      });
-    }
-
-    function getScore() {
-      const board = currentBoard();
-      const total = (board.targets || []).length;
-      let correct = 0;
-      board.targets.forEach(target => {
-        if (normalize(state.placements[target.id]) === normalize(target.answer)) {
-          correct += 1;
-        }
-      });
-      return { correct, total };
-    }
-
-    function renderTeacherList() {
-      if (!state.teacherTargets.length) {
-        els.teacherList.textContent = 'No teacher targets placed yet.';
-        return;
-      }
-      els.teacherList.textContent = state.teacherTargets.map((target, i) => {
-        return (i + 1) + '. ' + target.answer + ' @ ' + Math.round(target.x) + '%, ' + Math.round(target.y) + '%';
-      }).join('\n');
-    }
-
-    function renderBoard() {
-      const board = currentBoard();
-      const imageToShow = state.localBoardImage || board.imageUrl;
-      const score = getScore();
-      const progress = score.total ? Math.round((score.correct / score.total) * 100) : 0;
-
-      els.board.className = 'board' + (state.teacherMode ? ' teacher' : '');
-      els.board.innerHTML = '';
-
-      if (imageToShow) {
-        const img = document.createElement('img');
-        img.className = 'board-image';
-        img.src = imageToShow;
-        img.alt = board.boardTitle;
-        els.board.appendChild(img);
-      } else {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'board-placeholder';
-        placeholder.innerHTML = '<div><strong>No anatomy board yet.</strong><br />Upload an image or point this board at one from your repo.</div>';
-        els.board.appendChild(placeholder);
-      }
-
-      board.targets.forEach((target, index) => {
-        const placed = state.placements[target.id] || '';
-        const isCorrect = placed && normalize(placed) === normalize(target.answer);
-        const isWrong = placed && !isCorrect;
-
-        const targetEl = document.createElement('div');
-        targetEl.className = 'target' + (isCorrect ? ' good' : '') + (isWrong ? ' bad' : '');
-        targetEl.style.left = clamp(target.x, 5, 95) + '%';
-        targetEl.style.top = clamp(target.y, 5, 95) + '%';
-
-        targetEl.addEventListener('dragover', e => e.preventDefault());
-        targetEl.addEventListener('drop', e => {
-          e.preventDefault();
-          if (!state.draggingItem || state.typingMode) return;
-          state.placements[target.id] = state.draggingItem.label;
-          render();
-        });
-
-        if (state.typingMode && !state.showAnswers) {
-          targetEl.innerHTML = `
-            <div class="target-row">
-              <span class="target-index">${index + 1}</span>
-              <input class="typing-input" type="text" placeholder="Type answer" value="${escapeHtml(placed)}" />
-            </div>
-          `;
-          const input = targetEl.querySelector('.typing-input');
-          input.addEventListener('click', e => e.stopPropagation());
-          input.addEventListener('input', e => {
-            state.placements[target.id] = e.target.value;
-            renderBoard();
-          });
-        } else if (state.showAnswers) {
-          const matchIcon = state.icons.find(icon => normalize(icon.label) === normalize(target.answer));
-          targetEl.innerHTML = `
-            <div class="target-row">
-              <span class="target-index">${index + 1}</span>
-              ${matchIcon ? `<img class="target-thumb" src="${escapeHtml(matchIcon.src)}" alt="${escapeHtml(matchIcon.label)}" />` : ''}
-              <span class="target-text">${escapeHtml(target.answer)}</span>
-            </div>
-          `;
-        } else {
-          const matchIcon = state.icons.find(icon => normalize(icon.label) === normalize(placed));
-          targetEl.innerHTML = `
-            <div class="target-row">
-              <span class="target-index">${index + 1}</span>
-              ${matchIcon ? `<img class="target-thumb" src="${escapeHtml(matchIcon.src)}" alt="${escapeHtml(matchIcon.label)}" />` : ''}
-              <span class="target-text">${escapeHtml(placed || ('Drop ' + (index + 1)))}</span>
-            </div>
-          `;
-        }
-
-        els.board.appendChild(targetEl);
-      });
-
-      if (state.teacherMode) {
-        state.teacherTargets.forEach((target, index) => {
-          const pin = document.createElement('div');
-          pin.className = 'teacher-pin';
-          pin.style.left = clamp(target.x, 3, 97) + '%';
-          pin.style.top = clamp(target.y, 3, 97) + '%';
-          pin.textContent = (index + 1) + '. ' + target.answer;
-          els.board.appendChild(pin);
-        });
-      }
-
-      els.boardTitle.textContent = board.boardTitle;
-      els.boardPrompt.textContent = els.customPrompt.value.trim() || board.prompt;
-      els.scoreBadge.textContent = score.correct + '/' + score.total + ' correct';
-      els.progressBar.style.width = progress + '%';
-      els.teacherModeBtn.textContent = state.teacherMode ? 'Exit Teacher Mode' : 'Teacher Mode';
-      els.teacherModeBtn.className = state.teacherMode ? 'active' : '';
-      els.typingModeBtn.textContent = state.typingMode ? 'Drag Icons Mode' : 'Type Answers';
-      els.typingModeBtn.className = state.typingMode ? 'active' : '';
-    }
-
-    function render() {
-      populateCategoryFilter();
-      renderIconBank();
-      renderBoard();
-      renderTeacherList();
     }
 
     function splitCsvLine(line) {
@@ -865,32 +560,168 @@
       return result;
     }
 
-    function parseBoardsCsv(text) {
-      const lines = text.trim().split(/
-?
-/).filter(Boolean);
+    function parseCsv(text) {
+      const lines = text.trim().split(/\r?\n/).filter(Boolean);
       if (!lines.length) return [];
       const headers = splitCsvLine(lines[0]);
       return lines.slice(1).map((line, idx) => {
         const cells = splitCsvLine(line);
         const row = {};
         headers.forEach((h, i) => row[h.trim()] = (cells[i] || '').trim());
-        const allowedIconIds = (row.allowedIconIds || '').split('|').map(s => s.trim()).filter(Boolean);
-        const targets = (row.targets || '').split('|').map((chunk, i) => {
+        const labels = (row.labels || '').split('|').map(s => s.trim()).filter(Boolean);
+        const zones = (row.zones || '').split('|').map((chunk, zoneIdx) => {
           const [answer, x, y] = chunk.split('@');
           if (!answer || x === undefined || y === undefined) return null;
-          return { id: 't' + (i + 1), answer: answer.trim(), x: Number(x), y: Number(y) };
+          return {
+            id: 'z' + (zoneIdx + 1),
+            answer: answer.trim(),
+            x: Number(x),
+            y: Number(y)
+          };
         }).filter(Boolean);
+
         return {
-          id: row.id || ('board-' + (idx + 1)),
-          boardTitle: row.boardTitle || 'Untitled Anatomy Board',
+          id: row.id || ('row-' + (idx + 1)),
+          diagramTitle: row.diagramTitle || 'Untitled Diagram',
           imageUrl: row.imageUrl || '',
-          prompt: row.prompt || 'Place the structures on the anatomy board.',
-          placementsMode: 'icons',
-          allowedIconIds,
-          targets
+          prompt: row.prompt || 'Label the diagram.',
+          labels,
+          zones
         };
-      }).filter(board => board.imageUrl && board.targets.length);
+      }).filter(q => q.imageUrl && q.labels.length && q.zones.length);
+    }
+
+    function resetPlacements() {
+      const q = currentQuestion();
+      state.placements = {};
+      (q.zones || []).forEach(zone => {
+        state.placements[zone.id] = '';
+      });
+      state.showAnswers = false;
+    }
+
+    function getScore() {
+      const q = currentQuestion();
+      const total = (q.zones || []).length;
+      let correct = 0;
+      q.zones.forEach(zone => {
+        if (normalizeAnswer(state.placements[zone.id]) === normalizeAnswer(zone.answer)) {
+          correct += 1;
+        }
+      });
+      return { correct, total };
+    }
+
+    function renderLabelBank() {
+      const q = currentQuestion();
+      els.labelBank.innerHTML = '';
+      if (state.typingMode) {
+        els.labelBank.innerHTML = '<div class="helper">Typing mode is on. Type answers directly into the numbered targets on the board.</div>';
+        return;
+      }
+      q.labels.forEach(label => {
+        const chip = document.createElement('div');
+        chip.className = 'label-chip';
+        chip.draggable = true;
+        chip.textContent = label;
+        chip.addEventListener('dragstart', () => {
+          state.draggingLabel = label;
+        });
+        chip.addEventListener('dragend', () => {
+          state.draggingLabel = null;
+        });
+        els.labelBank.appendChild(chip);
+      });
+    }
+
+    function renderTeacherList() {
+      if (!state.teacherZones.length) {
+        els.teacherList.textContent = 'No teacher zones placed yet.';
+        return;
+      }
+      els.teacherList.textContent = state.teacherZones.map((zone, i) => {
+        return (i + 1) + '. ' + zone.answer + ' @ ' + Math.round(zone.x) + '%, ' + Math.round(zone.y) + '%';
+      }).join('\n');
+    }
+
+    function renderBoard() {
+      const q = currentQuestion();
+      const score = getScore();
+      const progress = score.total ? Math.round((score.correct / score.total) * 100) : 0;
+      const imageToShow = state.localImage || q.imageUrl;
+
+      els.board.className = 'board' + (state.teacherMode ? ' teacher' : '');
+      els.board.innerHTML = '';
+
+      if (imageToShow) {
+        const img = document.createElement('img');
+        img.className = 'board-image';
+        img.src = imageToShow;
+        img.alt = q.diagramTitle;
+        els.board.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'board-placeholder';
+        placeholder.innerHTML = '<div><strong>No diagram yet.</strong><br />Upload an image or load a question set.</div>';
+        els.board.appendChild(placeholder);
+      }
+
+      q.zones.forEach((zone, index) => {
+        const placed = state.placements[zone.id] || '';
+        const isCorrect = placed && normalizeAnswer(placed) === normalizeAnswer(zone.answer);
+        const isWrong = placed && !isCorrect;
+        const zoneEl = document.createElement('div');
+        zoneEl.className = 'zone' + (isCorrect ? ' good' : '') + (isWrong ? ' bad' : '');
+        zoneEl.style.left = clamp(zone.x, 5, 95) + '%';
+        zoneEl.style.top = clamp(zone.y, 5, 95) + '%';
+        zoneEl.addEventListener('dragover', e => e.preventDefault());
+        zoneEl.addEventListener('drop', e => {
+          e.preventDefault();
+          if (!state.draggingLabel) return;
+          state.placements[zone.id] = state.draggingLabel;
+          render();
+        });
+
+        const shownText = state.showAnswers ? zone.answer : (placed || ('Drop ' + (index + 1)));
+        if (state.typingMode && !state.showAnswers) {
+          zoneEl.innerHTML = '<div class="zone-row"><span class="zone-index">' + (index + 1) + '</span><input class="zone-input" type="text" placeholder="Type answer" value="' + escapeHtml(placed) + '" /></div>';
+          const input = zoneEl.querySelector('.zone-input');
+          input.addEventListener('click', e => e.stopPropagation());
+          input.addEventListener('input', e => {
+            state.placements[zone.id] = e.target.value;
+            renderBoard();
+          });
+        } else {
+          zoneEl.innerHTML = '<div class="zone-row"><span class="zone-index">' + (index + 1) + '</span><span>' + escapeHtml(shownText) + '</span></div>';
+        }
+        els.board.appendChild(zoneEl);
+      });
+
+      if (state.teacherMode) {
+        state.teacherZones.forEach((zone, index) => {
+          const pin = document.createElement('div');
+          pin.className = 'teacher-pin';
+          pin.style.left = clamp(zone.x, 3, 97) + '%';
+          pin.style.top = clamp(zone.y, 3, 97) + '%';
+          pin.textContent = (index + 1) + '. ' + zone.answer;
+          els.board.appendChild(pin);
+        });
+      }
+
+      els.diagramTitle.textContent = q.diagramTitle;
+      els.diagramPrompt.textContent = els.customPrompt.value.trim() || q.prompt;
+      els.scoreBadge.textContent = score.correct + '/' + score.total + ' correct';
+      els.progressBar.style.width = progress + '%';
+      els.teacherModeBtn.textContent = state.teacherMode ? 'Exit Teacher Mode' : 'Teacher Mode';
+      els.teacherModeBtn.className = state.teacherMode ? 'active' : '';
+      els.typingModeBtn.textContent = state.typingMode ? 'Drag Labels Mode' : 'Type Answers';
+      els.typingModeBtn.className = state.typingMode ? 'active' : '';
+    }
+
+    function render() {
+      renderLabelBank();
+      renderBoard();
+      renderTeacherList();
     }
 
     function downloadText(filename, content, mimeType) {
@@ -902,16 +733,25 @@
       URL.revokeObjectURL(link.href);
     }
 
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     document.getElementById('prevBtn').addEventListener('click', () => {
-      state.boardIndex = (state.boardIndex - 1 + state.boards.length) % state.boards.length;
-      state.localBoardImage = '';
+      state.questionIndex = (state.questionIndex - 1 + state.questions.length) % state.questions.length;
+      state.localImage = '';
       resetPlacements();
       render();
     });
 
     document.getElementById('nextBtn').addEventListener('click', () => {
-      state.boardIndex = (state.boardIndex + 1) % state.boards.length;
-      state.localBoardImage = '';
+      state.questionIndex = (state.questionIndex + 1) % state.questions.length;
+      state.localImage = '';
       resetPlacements();
       render();
     });
@@ -928,24 +768,16 @@
     });
 
     document.getElementById('saveSessionBtn').addEventListener('click', () => {
-      const board = currentBoard();
+      const q = currentQuestion();
       const payload = {
         exportedAt: new Date().toISOString(),
-        boardId: board.id,
-        boardTitle: board.boardTitle,
-        prompt: els.customPrompt.value.trim() || board.prompt,
+        questionId: q.id,
+        diagramTitle: q.diagramTitle,
+        prompt: els.customPrompt.value.trim() || q.prompt,
         placements: state.placements,
         score: getScore()
       };
-      downloadText((board.id || 'session') + '-session.json', JSON.stringify(payload, null, 2), 'application/json');
-    });
-
-    document.getElementById('typingModeBtn').addEventListener('click', () => {
-      state.typingMode = !state.typingMode;
-      setStatus(state.typingMode
-        ? 'Typing mode is on. Enter anatomy structure names directly into each numbered target.'
-        : 'Drag-icon mode is back on. Use the icon bank to place structures.');
-      render();
+      downloadText((q.id || 'session') + '-session.json', JSON.stringify(payload, null, 2), 'application/json');
     });
 
     document.getElementById('teacherModeBtn').addEventListener('click', () => {
@@ -953,18 +785,26 @@
       render();
     });
 
-    els.board.addEventListener('click', event => {
+    document.getElementById('typingModeBtn').addEventListener('click', () => {
+      state.typingMode = !state.typingMode;
+      setStatus(state.typingMode
+        ? 'Typing mode is on. Enter answers directly into each numbered target.'
+        : 'Drag-label mode is back on. Use the label bank to place answers.');
+      render();
+    });
+
+    els.board.addEventListener('click', (event) => {
       if (!state.teacherMode) return;
       const answer = els.teacherAnswer.value.trim();
       if (!answer) {
-        setStatus('Teacher mode is on. Type a structure name in “Next Target Label,” then click the board to place it.');
+        setStatus('Teacher mode is on. Type a label in “Next Target Label,” then click the image to place it.');
         return;
       }
       const rect = els.board.getBoundingClientRect();
       const x = ((event.clientX - rect.left) / rect.width) * 100;
       const y = ((event.clientY - rect.top) / rect.height) * 100;
-      state.teacherTargets.push({
-        id: 'tt' + (state.teacherTargets.length + 1),
+      state.teacherZones.push({
+        id: 'tz' + (state.teacherZones.length + 1),
         answer,
         x: clamp(x, 0, 100),
         y: clamp(y, 0, 100)
@@ -974,166 +814,110 @@
       render();
     });
 
-    els.searchInput.addEventListener('input', renderIconBank);
-    els.categoryFilter.addEventListener('change', renderIconBank);
-
-    els.boardImageUpload.addEventListener('change', event => {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      state.localBoardImage = URL.createObjectURL(file);
-      if (!els.customPrompt.value.trim()) {
-        els.customPrompt.value = 'Practice board for ' + file.name;
-      }
-      setStatus('Loaded local anatomy board: ' + file.name);
-      render();
-    });
-
-    els.customPrompt.addEventListener('input', renderBoard);
-
     document.getElementById('loadCsvBtn').addEventListener('click', async () => {
       const url = els.csvUrl.value.trim();
       if (!url) {
-        setStatus('Paste a CSV question bank URL first.');
+        setStatus('Paste a published Google Sheet CSV URL first.');
         return;
       }
       try {
-        setStatus('Loading anatomy boards from CSV...');
+        setStatus('Loading question bank from sheet...');
         const response = await fetch(url);
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const text = await response.text();
-        const boards = parseBoardsCsv(text);
-        if (!boards.length) throw new Error('No usable board rows found.');
-        state.boards = boards;
-        state.boardIndex = 0;
-        state.localBoardImage = '';
+        const parsed = parseCsv(text);
+        if (!parsed.length) throw new Error('No usable rows found in the CSV.');
+        state.questions = parsed;
+        state.questionIndex = 0;
+        state.localImage = '';
         resetPlacements();
-        setStatus('Loaded ' + boards.length + ' board(s) from CSV.');
+        setStatus('Loaded ' + parsed.length + ' question(s) from Google Sheets.');
         render();
       } catch (error) {
-        setStatus('Could not load CSV question bank: ' + error.message + '
-If this is a Google Sheet, make sure it is published to the web as CSV.');
+        setStatus('Could not load the sheet: ' + error.message + '\nIf this is a Google Sheet, make sure it is published to the web as CSV.');
       }
     });
 
-    document.getElementById('loadIconsBtn').addEventListener('click', async () => {
-      const url = els.iconsJsonUrl.value.trim();
-      if (!url) {
-        setStatus('Paste an icons.json URL first.');
-        return;
+    els.imageUpload.addEventListener('change', (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      state.localImage = URL.createObjectURL(file);
+      if (!els.customPrompt.value.trim()) {
+        els.customPrompt.value = 'Practice board for ' + file.name;
       }
-      try {
-        setStatus('Loading icon bank JSON...');
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const data = await response.json();
-        if (!Array.isArray(data) || !data.length) throw new Error('JSON did not contain an icon array.');
-        state.icons = data;
-        setStatus('Loaded ' + data.length + ' anatomy icon(s).');
-        render();
-      } catch (error) {
-        setStatus('Could not load icon JSON: ' + error.message + '\nMake sure the JSON is public and served from your GitHub Pages site or another public URL.');
-      }
+      setStatus('Loaded local image: ' + file.name);
+      render();
     });
 
-    document.getElementById('clearTeacherTargetsBtn').addEventListener('click', () => {
-      state.teacherTargets = [];
+    els.customPrompt.addEventListener('input', render);
+
+    document.getElementById('clearTeacherZonesBtn').addEventListener('click', () => {
+      state.teacherZones = [];
       setStatus('Teacher targets cleared.');
       render();
     });
 
     document.getElementById('useTeacherBoardBtn').addEventListener('click', () => {
-      const imageUrl = state.localBoardImage || currentBoard().imageUrl;
+      const imageUrl = state.localImage || currentQuestion().imageUrl;
       if (!imageUrl) {
-        setStatus('Upload a board image first, or start from a board that already has one.');
+        setStatus('Upload an image first, or start from a board that already has an image.');
         return;
       }
-      if (!state.teacherTargets.length) {
-        setStatus('Place at least one teacher target before converting to a practice board.');
+      if (!state.teacherZones.length) {
+        setStatus('Place at least one teacher target before turning it into a practice board.');
         return;
       }
-      const category = els.teacherCategory.value.trim();
-      const board = {
-        id: 'custom-board-' + Date.now(),
-        boardTitle: els.teacherTitle.value.trim() || 'Custom Anatomy Board',
+      const enteredLabels = els.teacherLabels.value
+        .split('|')
+        .map(item => item.trim())
+        .filter(Boolean);
+
+      const newQuestion = {
+        id: 'custom-' + Date.now(),
+        diagramTitle: els.teacherTitle.value.trim() || 'Custom Diagram',
         imageUrl,
-        prompt: els.customPrompt.value.trim() || 'Place the structures on the anatomy board.',
-        placementsMode: 'icons',
-        allowedIconIds: category
-          ? state.icons.filter(icon => icon.category === category).map(icon => icon.id)
-          : [],
-        targets: state.teacherTargets.map((target, index) => ({
-          id: 't' + (index + 1),
-          answer: target.answer,
-          x: target.x,
-          y: target.y
+        prompt: els.customPrompt.value.trim() || 'Label the diagram.',
+        labels: enteredLabels.length ? enteredLabels : state.teacherZones.map(zone => zone.answer),
+        zones: state.teacherZones.map((zone, index) => ({
+          id: 'z' + (index + 1),
+          answer: zone.answer,
+          x: zone.x,
+          y: zone.y
         }))
       };
 
-      state.boards.unshift(board);
-      state.boardIndex = 0;
-      state.teacherMode = false;
+      state.questions.unshift(newQuestion);
+      state.questionIndex = 0;
       resetPlacements();
-      setStatus('Teacher board converted into a live anatomy practice board.');
+      state.teacherMode = false;
+      setStatus('Teacher board converted into a live practice board.');
       render();
     });
 
-    document.getElementById('saveDriveBtn').addEventListener('click', async () => {
-      const url = els.driveSaveUrl.value.trim();
-      if (!url) {
-        setStatus('Paste your Google Apps Script web app URL first.');
-        return;
-      }
-      const board = currentBoard();
-      const payload = {
-        exportedAt: new Date().toISOString(),
-        boardId: board.id,
-        boardTitle: board.boardTitle,
-        prompt: els.customPrompt.value.trim() || board.prompt,
-        placements: state.placements,
-        score: getScore()
-      };
-      try {
-        setStatus('Saving JSON to Google Drive bridge...');
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        const text = await response.text();
-        if (!response.ok) throw new Error('HTTP ' + response.status + ' ' + text);
-        setStatus('Saved JSON through your Google Drive web app.' + (text ? '
-' + text : ''));
-      } catch (error) {
-        setStatus('Could not save to Google Drive directly: ' + error.message + '
-A small Apps Script bridge is the usual fix for static GitHub Pages apps.');
-      }
-    });
-
-    document.getElementById('exportTeacherJsonBtn').addEventListener('click', () => {
-      const imageUrl = state.localBoardImage || currentBoard().imageUrl;
+    document.getElementById('exportTeacherCsvBtn').addEventListener('click', () => {
+      const imageUrl = state.localImage || currentQuestion().imageUrl;
       if (!imageUrl) {
-        setStatus('You need a board image before exporting board JSON.');
+        setStatus('You need an image before exporting a teacher CSV row.');
         return;
       }
-      if (!state.teacherTargets.length) {
-        setStatus('Add at least one target before exporting board JSON.');
+      if (!state.teacherZones.length) {
+        setStatus('Add at least one teacher target before exporting CSV.');
         return;
       }
-      const payload = {
-        id: 'custom-board-' + Date.now(),
-        boardTitle: els.teacherTitle.value.trim() || 'Custom Anatomy Board',
+      const labels = els.teacherLabels.value.split('|').map(item => item.trim()).filter(Boolean);
+      const zonesText = state.teacherZones.map(zone => zone.answer + '@' + Math.round(zone.x) + '@' + Math.round(zone.y)).join('|');
+      const row = [
+        'custom-' + Date.now(),
+        els.teacherTitle.value.trim() || 'Custom Diagram',
         imageUrl,
-        prompt: els.customPrompt.value.trim() || 'Place the structures on the anatomy board.',
-        placementsMode: 'icons',
-        targets: state.teacherTargets.map((target, index) => ({
-          id: 't' + (index + 1),
-          answer: target.answer,
-          x: Math.round(target.x),
-          y: Math.round(target.y)
-        }))
-      };
-      downloadText('anatomy-board.json', JSON.stringify(payload, null, 2), 'application/json');
-      setStatus('Exported anatomy board JSON. You can keep these as a board bank in your repo later.');
+        els.customPrompt.value.trim() || 'Label the diagram.',
+        labels.join('|'),
+        zonesText
+      ].map(value => '"' + String(value).replaceAll('"', '""') + '"').join(',');
+
+      const header = '"id","diagramTitle","imageUrl","prompt","labels","zones"';
+      downloadText('teacher-mode-row.csv', header + '\n' + row, 'text/csv;charset=utf-8');
+      setStatus('Exported teacher-mode CSV row. Paste it into your Google Sheet question bank.');
     });
 
     resetPlacements();
