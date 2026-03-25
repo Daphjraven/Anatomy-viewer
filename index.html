@@ -687,10 +687,20 @@ const DEMO_QUESTIONS = [
           zoneEl.innerHTML = '<div class="zone-row"><span class="zone-index">' + (index + 1) + '</span><input class="zone-input" type="text" placeholder="Type answer" value="' + escapeHtml(placed) + '" /></div>';
           const input = zoneEl.querySelector('.zone-input');
           input.addEventListener('click', e => e.stopPropagation());
-          input.addEventListener('input', e => {
-            state.placements[zone.id] = e.target.value;
-            renderBoard();
-          });
+input.addEventListener('input', e => {
+  state.placements[zone.id] = e.target.value;
+  // DO NOT re-render yet
+});
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    render(); // now check answer
+  }
+});
+
+input.addEventListener('blur', () => {
+  render(); // check when user clicks away
+});
         } else {
           zoneEl.innerHTML = '<div class="zone-row"><span class="zone-index">' + (index + 1) + '</span><span>' + escapeHtml(shownText) + '</span></div>';
         }
